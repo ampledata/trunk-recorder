@@ -278,7 +278,7 @@ void start_recorder(Call *call) {
                     BOOST_LOG_TRIVIAL(error) << "\tTrying to record TDMA: " << call->get_freq() << " For TG: " << call->get_talkgroup();
                  }
 
-                if (talkgroup == "14832") {
+                if (call->get_talkgroup() == "14832") {
                     //if (talkgroup->mode == 'A') {
                         recorder = source->get_analog_recorder(talkgroup->get_priority());
                     //} else {
