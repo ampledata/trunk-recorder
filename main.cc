@@ -288,15 +288,15 @@ void start_recorder(Call *call) {
                     } else {
                         recorder = source->get_digital_recorder(talkgroup->get_priority());
                     }
-                } /* else {
+                }  else {
                     BOOST_LOG_TRIVIAL(error) << "\tTalkgroup not found: " << call->get_freq() << " For TG: " << call->get_talkgroup();
                     // A talkgroup was not found from the talkgroup file.
-                     if (default_mode == "analog") {
-                         recorder = source->get_analog_recorder(2);
-                     } else {
-                         recorder = source->get_digital_recorder(2);
-                     }
-                } */
+                    /* if (default_mode == "analog") {
+                        recorder = source->get_analog_recorder(2);
+                    } else {
+                        recorder = source->get_digital_recorder(2);
+                    } */
+                }
 
                 int total_recorders = get_total_recorders();
 
