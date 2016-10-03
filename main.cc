@@ -263,7 +263,7 @@ void start_recorder(Call *call) {
     call->set_recording(false); // start with the assumption that there are no recorders available.
     call->set_debug_recording(false);
 
-        BOOST_LOG_TRIVIAL(error) << "\tCall created for: " << call->get_talkgroup() << "\tTDMA: " << call->get_tdma() <<  "\tEncrypted: " << call->get_encrypted() << "\tFreq: " << std::setprecision(9) << call->get_freq();
+    BOOST_LOG_TRIVIAL(error) << "CALL: talkgroup=" << call->get_talkgroup() << " TDMA=" << call->get_tdma() <<  " encrypted=" << call->get_encrypted() << " freq=" << std::setprecision(9) << call->get_freq();
 
     if (call->get_encrypted() == false) {
 
@@ -278,15 +278,14 @@ void start_recorder(Call *call) {
                     BOOST_LOG_TRIVIAL(error) << "\tTrying to record TDMA: " << call->get_freq() << " For TG: " << call->get_talkgroup();
                  }
 
-                if (talkgroup)
-                {
-                    if (talkgroup->mode == 'A') {
+                if (talkgroup == "14832") {
+                    //if (talkgroup->mode == 'A') {
                         recorder = source->get_analog_recorder(talkgroup->get_priority());
-                    } else {
-                        recorder = source->get_digital_recorder(talkgroup->get_priority());
-                    }
+                    //} else {
+                    //    recorder = source->get_digital_recorder(talkgroup->get_priority());
+                    //}
                 } else {
-                    BOOST_LOG_TRIVIAL(error) << "\tTalkgroup not found: " << call->get_freq() << " For TG: " << call->get_talkgroup();
+                    BOOST_LOG_TRIVIAL(error) << "NOT FOUND talkgroup=" << call->get_talkgroup() " freq=" << call->get_freq();
                     // A talkgroup was not found from the talkgroup file.
                     /* if (default_mode == "analog") {
                         recorder = source->get_analog_recorder(2) ;
