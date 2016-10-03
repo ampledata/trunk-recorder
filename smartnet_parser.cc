@@ -11,53 +11,48 @@ SmartnetParser::SmartnetParser() {
 }
 
 double SmartnetParser::getfreq(int cmd) {
-        // http://forums.radioreference.com/utah-radio-discussion-forum/125682-custom-band-plan-s-rebanded-systems.html
+	// http://forums.radioreference.com/utah-radio-discussion-forum/125682-custom-band-plan-s-rebanded-systems.html
 
 	float freq;
 
-        float step;
-        float base_freq;
+	float step;
+	float base_freq;
 
-        float cmd_minus;
-        float cmd_a;
-        float cmd_b;
+	float cmd_minus;
+	float cmd_a;
+	float cmd_b;
 
-        step = 0.025;  // 25 kHz
-        base_freq = 851.0125;  // 851.0125 MHz
+	step = 0.025;  // 25 kHz
+	base_freq = 851.0125;  // 851.0125 MHz
 
-        cmd_minus = 10.9875;
+	cmd_minus = 10.9875;
 
 	if (cmd < 0x1b8) {
-                cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl; 
 
-                cmd_a = float(cmd * step);
-		freq = float(cmd_a  + base_freq) * 1000000;
-
-                cout << "< 0x1b8, cmd_a=" << cmd_a << " freq=" << std::setprecision(9) << freq << endl;
+		cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl;
+    	cmd_a = float(cmd * step);
+    	freq = float(cmd_a  + base_freq) * 1000000;
+		cout << "< 0x1b8, cmd_a=" << cmd_a << " freq=" << std::setprecision(9) << freq << endl;
 
 	} else if (cmd < 0x230) {
-                cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl; 
 
-                cmd_b = float(cmd * step);
-		freq = float(cmd_b + base_freq - cmd_minus) * 1000000; 
-
-                cout << "< 0x230, cmd_b=" << cmd_b << " freq=" << freq << endl;
-
+		cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl;
+		cmd_b = float(cmd * step);
+		freq = float(cmd_b + base_freq - cmd_minus) * 1000000;
+		cout << "< 0x230, cmd_b=" << cmd_b << " freq=" << freq << endl;
+        
 	} else {
 		freq = 0;
 	}
 
-
 	return freq;
 }
-
 
 
 std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 
 	std::vector<TrunkMessage> messages;
 	TrunkMessage message;
-
 
 	message.message_type = UNKNOWN;
 	message.encrypted = false;
@@ -67,13 +62,19 @@ std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 	message.emergency = false;
 
 	std::vector<std::string> x;
+
+    // Example of 's' is: 12983,1,42
 	boost::split(x, s, boost::is_any_of(","), boost::token_compress_on);
 
-	int full_address = atoi( x[0].c_str() );
+    // 12983
+	int full_address = atoi(x[0].c_str());
 	int status = full_address & 0x000F;
 	long address = full_address & 0xFFF0;
+
 	//int groupflag = atoi( x[1].c_str() );
-	int command = atoi( x[2].c_str() );
+
+    // 42
+	int command = atoi(x[2].c_str());
 
 	x.clear();
 	vector<string>().swap(x);
@@ -89,7 +90,7 @@ std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 			// Channel Grant
 			message.message_type = GRANT;
 			message.source = lastaddress;
-                        cout << "------ GRANT (" << s << ") -------" << endl;
+			cout << "------ GRANT (" << s << ") -------" << endl;
 			// Check Status
 			/* Status Message in TalkGroup ID
 			 *   0 Normal Talkgroup
@@ -126,6 +127,7 @@ std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 	lastaddress = full_address;
 	lastcmd = command;
 	messages.push_back(message);
-        //cout << "message_type=" << message.message_type << endl;
+
+	//cout << "message_type=" << message.message_type << endl;
 	return messages;
 }
