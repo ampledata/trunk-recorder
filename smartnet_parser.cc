@@ -1,38 +1,60 @@
+#include <iostream>
+#include <iomanip>
+
 #include "smartnet_parser.h"
 
 using namespace std;
+
 SmartnetParser::SmartnetParser() {
 	lastaddress = 0;
 	lastcmd = 0;
 }
+
 double SmartnetParser::getfreq(int cmd) {
+        // http://forums.radioreference.com/utah-radio-discussion-forum/125682-custom-band-plan-s-rebanded-systems.html
 
-
-/* Different Systems will have different band plans. Below is the one for WMATA which is a bit werid:*/
- /*       if (cmd < 0x12e) {
-                freq = float((cmd) * 0.025 + 489.0875);
-        } else if (cmd < 0x2b0) {
-                freq = float((cmd-380) * 0.025 + 489.0875);
-        } else {
-                freq = 0;
-        }
-      cout << "CMD: 0x" <<  hex << cmd << " Freq: " << freq << " Multi: " << (cmd - 308) * 0.025 << " CMD: " << dec << cmd << endl; 
-*/
 	float freq;
+
+        float step;
+        float base_freq;
+
+        float cmd_minus;
+        float cmd_a;
+        float cmd_b;
+
+        step = 0.025;  // 25 kHz
+        base_freq = 851.0125;  // 851.0125 MHz
+
+        cmd_minus = 10.9875;
+
 	if (cmd < 0x1b8) {
-		freq = float(cmd * 0.025 + 851.0125);
+                cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl; 
+
+                cmd_a = float(cmd * step);
+		freq = float(cmd_a  + base_freq) * 1000000;
+
+                cout << "< 0x1b8, cmd_a=" << cmd_a << " freq=" << std::setprecision(9) << freq << endl;
+
 	} else if (cmd < 0x230) {
-		freq = float(cmd * 0.025 + 851.0125 - 10.9875);
+                cout << "cmd_hex=" << hex << cmd << " cmd_dec=" << dec << cmd << endl; 
+
+                cmd_b = float(cmd * step);
+		freq = float(cmd_b + base_freq - cmd_minus) * 1000000; 
+
+                cout << "< 0x230, cmd_b=" << cmd_b << " freq=" << freq << endl;
+
 	} else {
 		freq = 0;
 	}
 
-	return freq*1000000;
+
+	return freq;
 }
 
 
 
 std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
+
 	std::vector<TrunkMessage> messages;
 	TrunkMessage message;
 
@@ -55,16 +77,19 @@ std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 
 	x.clear();
 	vector<string>().swap(x);
+
 	if ((address & 0xfc00) == 0x2800) {
 		message.sysid = lastaddress;
 		message.message_type = SYSID;
 	} else if (command < 0x2d0) {
 		message.talkgroup = address;
 		message.freq = getfreq(command);
+
 		if ( lastcmd == 0x308 || lastcmd == 0x321 ) { // Include digital
 			// Channel Grant
 			message.message_type = GRANT;
 			message.source = lastaddress;
+                        cout << "------ GRANT (" << s << ") -------" << endl;
 			// Check Status
 			/* Status Message in TalkGroup ID
 			 *   0 Normal Talkgroup
@@ -101,5 +126,6 @@ std::vector<TrunkMessage> SmartnetParser::parse_message(std::string s) {
 	lastaddress = full_address;
 	lastcmd = command;
 	messages.push_back(message);
+        //cout << "message_type=" << message.message_type << endl;
 	return messages;
 }

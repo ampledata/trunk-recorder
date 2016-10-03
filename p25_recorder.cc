@@ -191,7 +191,7 @@ p25_recorder::p25_recorder(Source *src, bool qpsk)
 	path_stream << boost::filesystem::current_path().string() <<  "/" << 1900 + ltm->tm_year << "/" << 1 + ltm->tm_mon << "/" << ltm->tm_mday;
 
 	boost::filesystem::create_directories(path_stream.str());
-	sprintf(filename, "%s/%ld-%ld_%g.wav", path_stream.str().c_str(),talkgroup,timestamp,freq);
+	sprintf(filename, "%s/%ld-%ld_%9.0f.wav", path_stream.str().c_str(),talkgroup,timestamp,freq);
 	wav_sink = gr::blocks::nonstop_wavfile_sink::make(filename,1,8000,16);
 
 

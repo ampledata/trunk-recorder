@@ -183,7 +183,7 @@ void load_config()
             std::string device = node.second.get<std::string>("device","");
             
 
-            BOOST_LOG_TRIVIAL(info) << "Center: " << node.second.get<double>("center",0);
+            BOOST_LOG_TRIVIAL(info) << "Center: " << std::setprecision(9) << node.second.get<double>("center",0);
             BOOST_LOG_TRIVIAL(info) << "Rate: " << node.second.get<double>("rate",0);
             BOOST_LOG_TRIVIAL(info) << "Error: " << node.second.get<double>("error",0);
             BOOST_LOG_TRIVIAL(info) << "PPM Error: " << node.second.get<double>("ppm",0);
@@ -204,8 +204,8 @@ void load_config()
             }
 
             Source *source = new Source(center,rate,error,driver,device);
-            BOOST_LOG_TRIVIAL(info) << "Max HZ: " << source->get_max_hz();
-            BOOST_LOG_TRIVIAL(info) << "Min HZ: " << source->get_min_hz();
+            BOOST_LOG_TRIVIAL(info) << "Max HZ: " << std::setprecision(9) << source->get_max_hz();
+            BOOST_LOG_TRIVIAL(info) << "Min HZ: " << std::setprecision(9) << source->get_min_hz();
             source->set_if_gain(if_gain);
             source->set_bb_gain(bb_gain);
             source->set_gain(gain);
@@ -263,7 +263,7 @@ void start_recorder(Call *call) {
     call->set_recording(false); // start with the assumption that there are no recorders available.
     call->set_debug_recording(false);
 
-        BOOST_LOG_TRIVIAL(error) << "\tCall created for: " << call->get_talkgroup() << "\tTDMA: " << call->get_tdma() <<  "\tEncrypted: " << call->get_encrypted() << "\tFreq: " << call->get_freq();    
+        BOOST_LOG_TRIVIAL(error) << "\tCall created for: " << call->get_talkgroup() << "\tTDMA: " << call->get_tdma() <<  "\tEncrypted: " << call->get_encrypted() << "\tFreq: " << std::setprecision(9) << call->get_freq();    
     
     if (call->get_encrypted() == false) {
 

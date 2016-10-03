@@ -26,8 +26,8 @@ smartnet_trunking::smartnet_trunking(float f, float c, long s, gr::msg_queue::sp
 	float sps = samples_per_second/decim/syms_per_sec;
 	const double pi = boost::math::constants::pi<double>();
 
-	cout << "Control channel offset: " << offset << endl;
-	cout << "Control channel: " << chan_freq << endl;
+	cout << "Control channel offset: " << std::setprecision(9) << offset << endl;
+	cout << "Control channel: " << std::setprecision(9) << chan_freq << endl;
 	cout << "Decim: " << decim << endl;
 	cout << "Samples per symbol: " << sps << endl;
 
