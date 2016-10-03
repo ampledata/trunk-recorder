@@ -273,47 +273,15 @@ void start_recorder(Call *call) {
 
             if ((source->get_min_hz() <= call->get_freq()) && (source->get_max_hz() >= call->get_freq())) {
                 source_found = true;
-
-                 if (call->get_tdma()) {
-                    BOOST_LOG_TRIVIAL(error) << "\tTrying to record TDMA: " << call->get_freq() << " For TG: " << call->get_talkgroup();
-                 }
-
+                
                 if (call->get_talkgroup() == 14832) {
-                    //if (talkgroup->mode == 'A') {
-                        recorder = source->get_analog_recorder(talkgroup->get_priority());
-                    //} else {
-                    //    recorder = source->get_digital_recorder(talkgroup->get_priority());
-                    //}
-                } else {
-                    BOOST_LOG_TRIVIAL(error) << "NOT FOUND talkgroup=" << call->get_talkgroup() << " freq=" << call->get_freq();
-                    // A talkgroup was not found from the talkgroup file.
-                    /* if (default_mode == "analog") {
-                        recorder = source->get_analog_recorder(2) ;
-                    } else {
-                        recorder = source->get_digital_recorder(2);
-                    } */
-                }
-
-                int total_recorders = get_total_recorders();
-                if (recorder) {
+                    recorder = source->get_analog_recorder(talkgroup->get_priority());
+                    int total_recorders = get_total_recorders();
                     recorder->activate(call, total_recorders);
                     call->set_recorder(recorder);
                     call->set_recording(true);
-                } else {
-                    BOOST_LOG_TRIVIAL(error) << "\tNot recording call";
                 }
-
-                debug_recorder = source->get_debug_recorder();
-                if (debug_recorder) {
-                    debug_recorder->activate(call, total_recorders );
-                    call->set_debug_recorder(debug_recorder);
-                    call->set_debug_recording(true);
-                } else {
-                    //BOOST_LOG_TRIVIAL(info) << "\tNot debug recording call";
-                }
-
             }
-
         }
         if (!source_found) {
             BOOST_LOG_TRIVIAL(error) << "\tRecording not started because there was no source covering: " << call->get_freq() << " For TG: " << call->get_talkgroup();
