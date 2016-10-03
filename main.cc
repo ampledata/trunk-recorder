@@ -263,18 +263,16 @@ void start_recorder(Call *call) {
     call->set_recording(false); // start with the assumption that there are no recorders available.
     call->set_debug_recording(false);
 
-    BOOST_LOG_TRIVIAL(error) << "CALL: talkgroup=" << call->get_talkgroup() << " TDMA=" << call->get_tdma() <<  " encrypted=" << call->get_encrypted() << " freq=" << std::setprecision(9) << call->get_freq();
-
     if (call->get_encrypted() == false) {
-
-
         for(vector<Source *>::iterator it = sources.begin(); it != sources.end(); it++) {
             Source * source = *it;
 
             if ((source->get_min_hz() <= call->get_freq()) && (source->get_max_hz() >= call->get_freq())) {
                 source_found = true;
-                
+
                 if (call->get_talkgroup() == 14832) {
+                    BOOST_LOG_TRIVIAL(error) << "CALL: talkgroup=" << call->get_talkgroup() << " TDMA=" << call->get_tdma() <<  " encrypted=" << call->get_encrypted() << " freq=" << std::setprecision(9) << call->get_freq();
+
                     recorder = source->get_analog_recorder(talkgroup->get_priority());
                     int total_recorders = get_total_recorders();
                     recorder->activate(call, total_recorders);
@@ -283,6 +281,7 @@ void start_recorder(Call *call) {
                 }
             }
         }
+        
         if (!source_found) {
             BOOST_LOG_TRIVIAL(error) << "\tRecording not started because there was no source covering: " << call->get_freq() << " For TG: " << call->get_talkgroup();
         }
